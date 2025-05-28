@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squadcast Google Ads Analytics Dashboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .dashboard-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+        
+        .dashboard-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background-color: #e0e7ef;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #4a5568;
+        }
+        
+        .tab:hover {
+            background-color: #cbd5e0;
+        }
+        
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e7ef;
+        }
+        
+        th {
+            background-color: #f7fafc;
+            font-weight: 600;
+            color: #2d3748;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        tr:hover {
+            background-color: #f7fafc;
+        }
+        
+        .metric-value {
+            font-weight: 600;
+            color: #2563eb;
+        }
+        
+        .positive {
+            color: #10b981;
+        }
+        
+        .negative {
+            color: #ef4444;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 30px 0 15px 0;
+            color: #1a202c;
+        }
+        
+        .metric-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background-color: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e7ef;
+        }
+        
+        .metric-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #718096;
+            font-weight: 500;
+        }
+        
+        .metric-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+        
+        .metric-card .change {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .formula {
+            background-color: #edf2f7;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+        
+        .download-btn {
+            background-color: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: background-color 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            background-color: #059669;
+        }
+        
+        .notes {
+            background-color: #fef3c7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .notes h4 {
+            margin: 0 0 10px 0;
+            color: #92400e;
+        }
+        
+        .notes p {
+            margin: 5px 0;
+            color: #78350f;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <h1>Squadcast Google Ads Performance Model</h1>
+        <p>Comprehensive Data Analytics Dashboard | Q2-Q4 2025 Projections</p>
+    </div>
+    
+    <button class="download-btn" onclick="alert('In a real implementation, this would export all data to Excel format. For now, you can copy the tables into Excel.')">📊 Export to Excel</button>
+    
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('summary')">Executive Summary</button>
+        <button class="tab" onclick="showTab('keyword')">Keyword Analysis</button>
+        <button class="tab" onclick="showTab('budget')">Budget Model</button>
+        <button class="tab" onclick="showTab('funnel')">Conversion Funnel</button>
+        <button class="tab" onclick="showTab('competitive')">Competitive Intel</button>
+        <button class="tab" onclick="showTab('roi')">ROI Calculator</button>
+        <button class="tab" onclick="showTab('monthly')">Monthly Projections</button>
+    </div>
+    
+    <div class="content">
+        <!-- Executive Summary Tab -->
+        <div id="summary" class="tab-content">
+            <h2 class="section-title">Key Performance Metrics</h2>
+            
+            <div class="metric-cards">
+                <div class="metric-card">
+                    <h3>Annual Revenue Projection</h3>
+                    <div class="value">$2.4M - $4.8M</div>
+                    <div class="change positive">↑ 3-5x ROAS Target</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Customer Acquisition</h3>
+                    <div class="value">150-300</div>
+                    <div class="change">New customers/year</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Average CPA</h3>
+                    <div class="value">$800-$1,200</div>
+                    <div class="change positive">↓ 40% vs industry</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Recommended Budget</h3>
+                    <div class="value">$15K-$25K</div>
+                    <div class="change">Monthly investment</div>
+                </div>
+            </div>
+            
+            <h2 class="section-title">Campaign Performance Summary</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Q2 2025</th>
+                            <th>Q3 2025</th>
+                            <th>Q4 2025</th>
+                            <th>Full Year</th>
+                            <th>Industry Benchmark</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Monthly Budget</td>
+                            <td class="metric-value">$10,000</td>
+                            <td class="metric-value">$15,000</td>
+                            <td class="metric-value">$20,000</td>
+                            <td class="metric-value">$180,000</td>
+                            <td>$8,000-$30,000</td>
+                        </tr>
+                        <tr>
+                            <td>Average CPC</td>
+                            <td>$7.00</td>
+                            <td>$6.50</td>
+                            <td>$6.00</td>
+                            <td>$6.50</td>
+                            <td>$4.00-$12.00</td>
+                        </tr>
+                        <tr>
+                            <td>Click-to-Trial Rate</td>
+                            <td>4.0%</td>
+                            <td>4.5%</td>
+                            <td>5.0%</td>
+                            <td>4.5%</td>
+                            <td>3.0%-5.0%</td>
+                        </tr>
+                        <tr>
+                            <td>Trial-to-Paid Rate</td>
+                            <td>15%</td>
+                            <td>17.5%</td>
+                            <td>20%</td>
+                            <td>17.5%</td>
+                            <td>15%-20%</td>
+                        </tr>
+                        <tr>
+                            <td>Cost Per Acquisition</td>
+                            <td>$1,167</td>
+                            <td>$929</td>
+                            <td>$750</td>
+                            <td>$928</td>
+                            <td>$800-$1,500</td>
+                        </tr>
+                        <tr>
+                            <td>ROAS</td>
+                            <td class="positive">3.0x</td>
+                            <td class="positive">3.8x</td>
+                            <td class="positive">4.7x</td>
+                            <td class="positive">3.8x</td>
+                            <td>2.5x-4.0x</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="notes">
+                <h4>📊 Key Assumptions</h4>
+                <p>• Average Customer LTV: $3,500 (SMB), $50,000 (Mid-market), $150,000 (Enterprise)</p>
+                <p>• Customer Mix: 60% SMB, 30% Mid-market, 10% Enterprise</p>
+                <p>• Blended Average LTV: $35,000</p>
+                <p>• Quality Score improvement reduces CPC by 7-15% over time</p>
+            </div>
+        </div>
+        
+        <!-- Keyword Analysis Tab -->
+        <div id="keyword" class="tab-content hidden">
+            <h2 class="section-title">Keyword Performance Analysis</h2>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Keyword</th>
+                            <th>Search Volume</th>
+                            <th>Competition</th>
+                            <th>Est. CPC</th>
+                            <th>Intent Score</th>
+                            <th>Priority</th>
+                            <th>Expected CTR</th>
+                            <th>Monthly Budget</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>incident management software</td>
+                            <td class="metric-value">8,100</td>
+                            <td>High</td>
+                            <td>$8.50</td>
+                            <td class="positive">9/10</td>
+                            <td>🔴 Critical</td>
+                            <td>3.5%</td>
+                            <td>$2,400</td>
+                        </tr>
+                        <tr>
+                            <td>pagerduty alternative</td>
+                            <td class="metric-value">2,400</td>
+                            <td>Medium</td>
+                            <td>$6.25</td>
+                            <td class="positive">10/10</td>
+                            <td>🔴 Critical</td>
+                            <td>5.2%</td>
+                            <td>$1,800</td>
+                        </tr>
+                        <tr>
+                            <td>opsgenie alternative</td>
+                            <td class="metric-value">1,900</td>
+                            <td>Low</td>
+                            <td>$5.75</td>
+                            <td class="positive">10/10</td>
+                            <td>🔴 Critical</td>
+                            <td>6.1%</td>
+                            <td>$1,600</td>
+                        </tr>
+                        <tr>
+                            <td>on call management tools</td>
+                            <td class="metric-value">3,600</td>
+                            <td>High</td>
+                            <td>$7.80</td>
+                            <td>8/10</td>
+                            <td>🟡 High</td>
+                            <td>3.2%</td>
+                            <td>$1,400</td>
+                        </tr>
+                        <tr>
+                            <td>devops incident management</td>
+                            <td class="metric-value">1,300</td>
+                            <td>Medium</td>
+                            <td>$6.90</td>
+                            <td>8/10</td>
+                            <td>🟡 High</td>
+                            <td>3.8%</td>
+                            <td>$800</td>
+                        </tr>
+                        <tr>
+                            <td>sre tools</td>
+                            <td class="metric-value">880</td>
+                            <td>Medium</td>
+                            <td>$9.20</td>
+                            <td>7/10</td>
+                            <td>🟢 Medium</td>
+                            <td>2.9%</td>
+                            <td>$600</td>
+                        </tr>
+                        <tr>
+                            <td>incident response platform</td>
+                            <td class="metric-value">720</td>
+                            <td>Low</td>
+                            <td>$5.40</td>
+                            <td>9/10</td>
+                            <td>🟡 High</td>
+                            <td>4.5%</td>
+                            <td>$500</td>
+                        </tr>
+                        <tr>
+                            <td>squadcast vs pagerduty</td>
+                            <td class="metric-value">210</td>
+                            <td>Low</td>
+                            <td>$3.80</td>
+                            <td class="positive">10/10</td>
+                            <td>🟡 High</td>
+                            <td>8.5%</td>
+                            <td>$200</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h2 class="section-title">Keyword Grouping Strategy</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ad Group</th>
+                            <th>Keywords Count</th>
+                            <th>Monthly Searches</th>
+                            <th>Avg CPC</th>
+                            <th>Budget Allocation</th>
+                            <th>Expected Conversions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Competitor - PagerDuty</td>
+                            <td>12</td>
+                            <td>4,850</td>
+                            <td>$6.10</td>
+                            <td>25%</td>
+                            <td>8-12</td>
+                        </tr>
+                        <tr>
+                            <td>Competitor - Opsgenie</td>
+                            <td>8</td>
+                            <td>2,900</td>
+                            <td>$5.50</td>
+                            <td>20%</td>
+                            <td>10-15</td>
+                        </tr>
+                        <tr>
+                            <td>Generic - Incident Mgmt</td>
+                            <td>15</td>
+                            <td>12,400</td>
+                            <td>$7.80</td>
+                            <td>35%</td>
+                            <td>12-18</td>
+                        </tr>
+                        <tr>
+                            <td>SRE/DevOps Specific</td>
+                            <td>10</td>
+                            <td>3,200</td>
+                            <td>$8.40</td>
+                            <td>15%</td>
+                            <td>5-8</td>
+                        </tr>
+                        <tr>
+                            <td>Brand Protection</td>
+                            <td>5</td>
+                            <td>1,100</td>
+                            <td>$2.20</td>
+                            <td>5%</td>
+                            <td>3-5</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Budget Model Tab -->
+        <div id="budget" class="tab-content hidden">
+            <h2 class="section-title">Dynamic Budget Allocation Model</h2>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Total Budget</th>
+                            <th>Search</th>
+                            <th>Display</th>
+                            <th>YouTube</th>
+                            <th>Competitor</th>
+                            <th>Retargeting</th>
+                            <th>Expected Clicks</th>
+                            <th>Expected Trials</th>
+                            <th>Expected Customers</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>April 2025</td>
+                            <td class="metric-value">$10,000</td>
+                            <td>$7,000</td>
+                            <td>$1,000</td>
+                            <td>$0</td>
+                            <td>$1,500</td>
+                            <td>$500</td>
+                            <td>1,429</td>
+                            <td>57</td>
+                            <td>9</td>
+                        </tr>
+                        <tr>
+                            <td>May 2025</td>
+                            <td class="metric-value">$10,000</td>
+                            <td>$6,500</td>
+                            <td>$1,000</td>
+                            <td>$500</td>
+                            <td>$1,500</td>
+                            <td>$500</td>
+                            <td>1,481</td>
+                            <td>59</td>
+                            <td>9</td>
+                        </tr>
+                        <tr>
+                            <td>June 2025</td>
+                            <td class="metric-value">$12,000</td>
+                            <td>$7,500</td>
+                            <td>$1,200</td>
+                            <td>$800</td>
+                            <td>$2,000</td>
+                            <td>$500</td>
+                            <td>1,846</td>
+                            <td>74</td>
+                            <td>11</td>
+                        </tr>
+                        <tr>
+                            <td>July 2025</td>
+                            <td class="metric-value">$15,000</td>
+                            <td>$9,000</td>
+                            <td>$1,500</td>
+                            <td>$1,500</td>
+                            <td>$2,500</td>
+                            <td>$500</td>
+                            <td>2,308</td>
+                            <td>104</td>
+                            <td>16</td>
+                        </tr>
+                        <tr>
+                            <td>August 2025</td>
+                            <td class="metric-value">$15,000</td>
+                            <td>$8,500</td>
+                            <td>$1,500</td>
+                            <td>$2,000</td>
+                            <td>$2,500</td>
+                            <td>$500</td>
+                            <td>2,400</td>
+                            <td>108</td>
+                            <td>17</td>
+                        </tr>
+                        <tr>
+                            <td>September 2025</td>
+                            <td class="metric-value">$18,000</td>
+                            <td>$10,000</td>
+                            <td>$2,000</td>
+                            <td>$2,500</td>
+                            <td>$3,000</td>
+                            <td>$500</td>
+                            <td>2,880</td>
+                            <td>130</td>
+                            <td>23</td>
+                        </tr>
+                        <tr>
+                            <td>October 2025</td>
+                            <td class="metric-value">$20,000</td>
+                            <td>$11,000</td>
+                            <td>$2,000</td>
+                            <td>$3,000</td>
+                            <td>$3,500</td>
+                            <td>$500</td>
+                            <td>3,333</td>
+                            <td>167</td>
+                            <td>28</td>
+                        </tr>
+                        <tr>
+                            <td>November 2025</td>
+                            <td class="metric-value">$22,000</td>
+                            <td>$12,000</td>
+                            <td>$2,500</td>
+                            <td>$3,500</td>
+                            <td>$3,500</td>
+                            <td>$500</td>
+                            <td>3,667</td>
+                            <td>183</td>
+                            <td>33</td>
+                        </tr>
+                        <tr>
+                            <td>December 2025</td>
+                            <td class="metric-value">$25,000</td>
+                            <td>$14,000</td>
+                            <td>$3,000</td>
+                            <td>$4,000</td>
+                            <td>$3,500</td>
+                            <td>$500</td>
+                            <td>4,167</td>
+                            <td>208</td>
+                            <td>42</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="formula">
+                <strong>Budget Allocation Formula:</strong><br>
+                Search Budget = Total Budget × 0.55-0.70 (decreasing as budget scales)<br>
+                Display Budget = Total Budget × 0.10-0.12<br>
+                YouTube Budget = MIN($4,000, Total Budget × 0.16)<br>
+                Competitor Budget = Total Budget × 0.15-0.20<br>
+                Retargeting = Fixed $500 until $20K total budget, then scales
+            </div>
+        </div>
+        
+        <!-- Conversion Funnel Tab -->
+        <div id="funnel" class="tab-content hidden">
+            <h2 class="section-title">Conversion Funnel Analysis</h2>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Stage</th>
+                            <th>Volume</th>
+                            <th>Conversion Rate</th>
+                            <th>Drop-off Rate</th>
+                            <th>Industry Benchmark</th>
+                            <th>Optimization Opportunity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Impressions</td>
+                            <td class="metric-value">500,000</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Clicks (CTR)</td>
+                            <td class="metric-value">20,000</td>
+                            <td>4.0%</td>
+                            <td>96.0%</td>
+                            <td>3.2%</td>
+                            <td class="positive">+25% vs benchmark</td>
+                        </tr>
+                        <tr>
+                            <td>Landing Page Views</td>
+                            <td class="metric-value">19,000</td>
+                            <td>95.0%</td>
+                            <td>5.0%</td>
+                            <td>92.0%</td>
+                            <td>Good performance</td>
+                        </tr>
+                        <tr>
+                            <td>Trial Signups</td>
+                            <td class="metric-value">900</td>
+                            <td>4.7%</td>
+                            <td>95.3%</td>
+                            <td>3.5%</td>
+                            <td class="positive">+34% vs benchmark</td>
+                        </tr>
+                        <tr>
+                            <td>Trial Activation</td>
+                            <td class="metric-value">720</td>
+                            <td>80.0%</td>
+                            <td>20.0%</td>
+                            <td>70.0%</td>
+                            <td>Strong activation</td>
+                        </tr>
+                        <tr>
+                            <td>Paid Customers</td>
+                            <td class="metric-value">144</td>
+                            <td>20.0%</td>
+                            <td>80.0%</td>
+                            <td>15.0%</td>
+                            <td class="positive">+33% vs benchmark</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h2 class="section-title">Funnel Optimization Priorities</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Priority</th>
+                            <th>Action Item</th>
+                            <th>Expected Impact</th>
+                            <th>Cost</th>
+                            <th>Timeline</th>
+                            <th>ROI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🔴 1</td>
+                            <td>Implement dynamic landing pages per keyword group</td>
+                            <td>+15% trial conversion</td>
+                            <td>$5,000</td>
+                            <td>2 weeks</td>
+                            <td class="positive">8.5x</td>
+                        </tr>
+                        <tr>
+                            <td>🔴 2</td>
+                            <td>Add Opsgenie migration calculator</td>
+                            <td>+25% Opsgenie keyword conversion</td>
+                            <td>$3,000</td>
+                            <td>1 week</td>
+                            <td class="positive">12.3x</td>
+                        </tr>
+                        <tr>
+                            <td>🟡 3</td>
+                            <td>Implement progressive profiling in trial</td>
+                            <td>+10% trial-to-paid</td>
+                            <td>$8,000</td>
+                            <td>3 weeks</td>
+                            <td class="positive">5.2x</td>
+                        </tr>
+                        <tr>
+                            <td>🟡 4</td>
+                            <td>Add comparison tool vs PagerDuty</td>
+                            <td>+20% competitor conversions</td>
+                            <td>$4,000</td>
+                            <td>2 weeks</td>
+                            <td class="positive">7.8x</td>
+                        </tr>
+                        <tr>
+                            <td>🟢 5</td>
+                            <td>Develop retargeting sequence</td>
+                            <td>+30% return visitor conversion</td>
+                            <td>$2,000</td>
+                            <td>1 week</td>
+                            <td class="positive">15.5x</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Competitive Intel Tab -->
+        <div id="competitive" class="tab-content hidden">
+            <h2 class="section-title">Competitive Intelligence Matrix</h2>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Competitor</th>
+                            <th>Est. Monthly Spend</th>
+                            <th>Primary Keywords</th>
+                            <th>Avg CPC</th>
+                            <th>Ad Strategy</th>
+                            <th>Weakness to Exploit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>PagerDuty</strong></td>
+                            <td class="metric-value">$75,000-$100,000</td>
+                            <td>incident management, on-call</td>
+                            <td>$12-15</td>
+                            <td>Brand dominance, broad targeting</td>
+                            <td>High pricing, complex setup</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Opsgenie</strong></td>
+                            <td class="metric-value">$0 (Discontinued)</td>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            <td>Sunset announced</td>
+                            <td class="positive">15,000 customers need migration</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Incident.io</strong></td>
+                            <td class="metric-value">$25,000-$35,000</td>
+                            <td>incident.io, modern incident</td>
+                            <td>$8-10</td>
+                            <td>Developer-focused, content marketing</td>
+                            <td>Limited enterprise features</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Rootly</strong></td>
+                            <td class="metric-value">$15,000-$20,000</td>
+                            <td>incident management slack</td>
+                            <td>$6-8</td>
+                            <td>Slack integration focus</td>
+                            <td>Single-channel dependency</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FireHydrant</strong></td>
+                            <td class="metric-value">$20,000-$30,000</td>
+                            <td>incident response, sre tools</td>
+                            <td>$9-11</td>
+                            <td>SRE community targeting</td>
+                            <td>Higher learning curve</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h2 class="section-title">Competitive Positioning Strategy</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Against</th>
+                            <th>Key Message</th>
+                            <th>Proof Points</th>
+                            <th>Target Keywords</th>
+                            <th>Expected Win Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PagerDuty</td>
+                            <td>"Same power, 50% less cost"</td>
+                            <td>• No per-incident charges<br>• Faster setup (2 hrs vs 2 days)<br>• Built-in SRE features</td>
+                            <td>pagerduty alternative, pagerduty pricing</td>
+                            <td class="positive">35%</td>
+                        </tr>
+                        <tr>
+                            <td>Opsgenie</td>
+                            <td>"Seamless migration in hours"</td>
+                            <td>• Free migration tool<br>• 1:1 feature parity<br>• Better than Jira integration</td>
+                            <td>opsgenie migration, opsgenie sunset</td>
+                            <td class="positive">45%</td>
+                        </tr>
+                        <tr>
+                            <td>Incident.io</td>
+                            <td>"Enterprise-ready from day one"</td>
+                            <td>• SOC2 + ISO certified<br>• 200+ integrations<br>• Global support</td>
+                            <td>incident.io vs squadcast</td>
+                            <td>30%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- ROI Calculator Tab -->
+        <div id="roi" class="tab-content hidden">
+            <h2 class="section-title">Customer Lifetime Value & ROI Analysis</h2>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Customer Segment</th>
+                            <th>Team Size</th>
+                            <th>Price/User/Mo</th>
+                            <th>Avg Tenure</th>
+                            <th>LTV</th>
+                            <th>CAC Target</th>
+                            <th>LTV:CAC Ratio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Startup (Free → Paid)</td>
+                            <td>5-10</td>
+                            <td>$9</td>
+                            <td>24 months</td>
+                            <td class="metric-value">$1,620</td>
+                            <td>$540</td>
+                            <td class="positive">3.0x</td>
+                        </tr>
+                        <tr>
+                            <td>SMB Standard</td>
+                            <td>10-25</td>
+                            <td>$15</td>
+                            <td>36 months</td>
+                            <td class="metric-value">$9,450</td>
+                            <td>$2,362</td>
+                            <td class="positive">4.0x</td>
+                        </tr>
+                        <tr>
+                            <td>Mid-Market Pro</td>
+                            <td>25-100</td>
+                            <td>$21</td>
+                            <td>60 months</td>
+                            <td class="metric-value">$63,000</td>
+                            <td>$12,600</td>
+                            <td class="positive">5.0x</td>
+                        </tr>
+                        <tr>
+                            <td>Enterprise</td>
+                            <td>100+</td>
+                            <td>Custom</td>
+                            <td>120 months</td>
+                            <td class="metric-value">$250,000+</td>
+                            <td>$35,000</td>
+                            <td class="positive">7.1x</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h2 class="section-title">Channel ROI Comparison</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Channel</th>
+                            <th>Monthly Spend</th>
+                            <th>Customers</th>
+                            <th>Avg CAC</th>
+                            <th>Avg LTV</th>
+                            <th>ROI</th>
+                            <th>Payback Period</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Google Search</td>
+                            <td>$12,000</td>
+                            <td>15</td>
+                            <td>$800</td>
+                            <td>$35,000</td>
+                            <td class="positive">43.8x</td>
+                            <td>2.3 months</td>
+                        </tr>
+                        <tr>
+                            <td>Competitor Keywords</td>
+                            <td>$3,500</td>
+                            <td>5</td>
+                            <td>$700</td>
+                            <td>$45,000</td>
+                            <td class="positive">64.3x</td>
+                            <td>1.9 months</td>
+                        </tr>
+                        <tr>
+                            <td>Display Network</td>
+                            <td>$2,000</td>
+                            <td>2</td>
+                            <td>$1,000</td>
+                            <td>$25,000</td>
+                            <td class="positive">25.0x</td>
+                            <td>3.2 months</td>
+                        </tr>
+                        <tr>
+                            <td>YouTube Ads</td>
+                            <td>$3,000</td>
+                            <td>3</td>
+                            <td>$1,000</td>
+                            <td>$30,000</td>
+                            <td class="positive">30.0x</td>
+                            <td>3.0 months</td>
+                        </tr>
+                        <tr>
+                            <td>Retargeting</td>
+                            <td>$500</td>
+                            <td>1</td>
+                            <td>$500</td>
+                            <td>$40,000</td>
+                            <td class="positive">80.0x</td>
+                            <td>1.5 months</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="formula">
+                <strong>ROI Calculation Formulas:</strong><br>
+                LTV = (Average Revenue per User × Gross Margin %) × Average Customer Lifespan<br>
+                CAC = Total Sales & Marketing Costs / Number of New Customers<br>
+                ROI = (LTV - CAC) / CAC × 100<br>
+                Payback Period = CAC / (Average Revenue per User × Gross Margin %)
+            </div>
+        </div>
+        
+        <!-- Monthly Projections Tab -->
+        <div id="monthly" class="tab-content hidden">
+            <h2 class="section-title">12-Month Performance Projections</h2>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Spend</th>
+                            <th>Clicks</th>
+                            <th>CPC</th>
+                            <th>Trials</th>
+                            <th>Customers</th>
+                            <th>Revenue</th>
+                            <th>ROAS</th>
+                            <th>Cumulative ROI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Apr 2025</td>
+                            <td>$10,000</td>
+                            <td>1,429</td>
+                            <td>$7.00</td>
+                            <td>57</td>
+                            <td>9</td>
+                            <td>$31,500</td>
+                            <td class="positive">3.15x</td>
+                            <td class="positive">$21,500</td>
+                        </tr>
+                        <tr>
+                            <td>May 2025</td>
+                            <td>$10,000</td>
+                            <td>1,481</td>
+                            <td>$6.75</td>
+                            <td>59</td>
+                            <td>9</td>
+                            <td>$31,500</td>
+                            <td class="positive">3.15x</td>
+                            <td class="positive">$43,000</td>
+                        </tr>
+                        <tr>
+                            <td>Jun 2025</td>
+                            <td>$12,000</td>
+                            <td>1,846</td>
+                            <td>$6.50</td>
+                            <td>74</td>
+                            <td>11</td>
+                            <td>$38,500</td>
+                            <td class="positive">3.21x</td>
+                            <td class="positive">$69,500</td>
+                        </tr>
+                        <tr>
+                            <td>Jul 2025</td>
+                            <td>$15,000</td>
+                            <td>2,308</td>
+                            <td>$6.50</td>
+                            <td>104</td>
+                            <td>16</td>
+                            <td>$56,000</td>
+                            <td class="positive">3.73x</td>
+                            <td class="positive">$110,500</td>
+                        </tr>
+                        <tr>
+                            <td>Aug 2025</td>
+                            <td>$15,000</td>
+                            <td>2,400</td>
+                            <td>$6.25</td>
+                            <td>108</td>
+                            <td>17</td>
+                            <td>$59,500</td>
+                            <td class="positive">3.97x</td>
+                            <td class="positive">$155,000</td>
+                        </tr>
+                        <tr>
+                            <td>Sep 2025</td>
+                            <td>$18,000</td>
+                            <td>2,880</td>
+                            <td>$6.25</td>
+                            <td>130</td>
+                            <td>23</td>
+                            <td>$80,500</td>
+                            <td class="positive">4.47x</td>
+                            <td class="positive">$217,500</td>
+                        </tr>
+                        <tr>
+                            <td>Oct 2025</td>
+                            <td>$20,000</td>
+                            <td>3,333</td>
+                            <td>$6.00</td>
+                            <td>167</td>
+                            <td>28</td>
+                            <td>$98,000</td>
+                            <td class="positive">4.90x</td>
+                            <td class="positive">$295,500</td>
+                        </tr>
+                        <tr>
+                            <td>Nov 2025</td>
+                            <td>$22,000</td>
+                            <td>3,667</td>
+                            <td>$6.00</td>
+                            <td>183</td>
+                            <td>33</td>
+                            <td>$115,500</td>
+                            <td class="positive">5.25x</td>
+                            <td class="positive">$389,000</td>
+                        </tr>
+                        <tr>
+                            <td>Dec 2025</td>
+                            <td>$25,000</td>
+                            <td>4,167</td>
+                            <td>$6.00</td>
+                            <td>208</td>
+                            <td>42</td>
+                            <td>$147,000</td>
+                            <td class="positive">5.88x</td>
+                            <td class="positive">$511,000</td>
+                        </tr>
+                        <tr>
+                            <td>Jan 2026</td>
+                            <td>$25,000</td>
+                            <td>4,310</td>
+                            <td>$5.80</td>
+                            <td>216</td>
+                            <td>43</td>
+                            <td>$150,500</td>
+                            <td class="positive">6.02x</td>
+                            <td class="positive">$636,500</td>
+                        </tr>
+                        <tr>
+                            <td>Feb 2026</td>
+                            <td>$27,000</td>
+                            <td>4,655</td>
+                            <td>$5.80</td>
+                            <td>233</td>
+                            <td>47</td>
+                            <td>$164,500</td>
+                            <td class="positive">6.09x</td>
+                            <td class="positive">$774,000</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 2026</td>
+                            <td>$30,000</td>
+                            <td>5,172</td>
+                            <td>$5.80</td>
+                            <td>259</td>
+                            <td>52</td>
+                            <td>$182,000</td>
+                            <td class="positive">6.07x</td>
+                            <td class="positive">$926,000</td>
+                        </tr>
+                        <tr style="font-weight: bold; background-color: #f7fafc;">
+                            <td>TOTAL</td>
+                            <td>$234,000</td>
+                            <td>38,548</td>
+                            <td>$6.07</td>
+                            <td>1,699</td>
+                            <td>305</td>
+                            <td>$1,160,000</td>
+                            <td class="positive">4.96x</td>
+                            <td class="positive">$926,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="notes">
+                <h4>📈 Growth Assumptions</h4>
+                <p>• CPC decreases 3-5% monthly through Quality Score optimization</p>
+                <p>• Trial conversion improves 0.5% monthly through landing page testing</p>
+                <p>• Trial-to-paid improves 1-2% quarterly through onboarding optimization</p>
+                <p>• Budget scales based on performance, capped at $30K until proven 5x+ ROAS</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.add('hidden'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.remove('hidden');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
